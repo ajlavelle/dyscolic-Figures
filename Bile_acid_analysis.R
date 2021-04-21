@@ -162,7 +162,7 @@ addMin <- function(df){
   }
   return(df2)
 }
-bile.ibd.comp <- addMin(bile.ibd.comp)
+bile.ibd.comp <- addMin(bile.ibd)
 
 #log
 bile.ibd.comp <- log2(bile.ibd.comp)
@@ -178,11 +178,11 @@ library(factoextra)
 sampleTable <- sample_data(ps2.bile.ibd)
 
 gene.pac <- dudi.pca(bile.ibd.comp, nf=3, scale = FALSE, center = FALSE, scannf = FALSE)
-scrs <- gene.pac$li
+pca.scrs <- gene.pac$li
 
-if(!(is.null(rownames(bile.ibd.df))) & !(is.null(rownames(scrs)))){
-  if(all(rownames(bile.ibd.df) == rownames(scrs))){
-    scrs <- cbind(scrs, bile.ibd.df)
+if(!(is.null(rownames(bile.ibd.df))) & !(is.null(rownames(pca.scrs)))){
+  if(all(rownames(bile.ibd.df) == rownames(pca.scrs))){
+    scrs <- cbind(pca.scrs, bile.ibd.df)
   }
 }
 
@@ -190,12 +190,12 @@ if(!(is.null(rownames(bile.ibd.df))) & !(is.null(rownames(scrs)))){
 
 pal <- c("red3", "grey25", "chartreuse2")
 
-bray.df <- scrs
+
 
 eval.1 <- round(gene.pac$eig[1]/sum(gene.pac$eig),3)*100
 eval.2 <- round(gene.pac$eig[2]/sum(gene.pac$eig),3)*100
 
-p2 <- ggplot(bray.df, aes(x=Axis1, y=Axis2, colour=Cluster, fill=Cluster)) + geom_point(size=2) + scale_fill_manual("Cluster", values = pal) + 
+p2 <- ggplot(pca.scrs, aes(x=Axis1, y=Axis2, colour=Cluster, fill=Cluster)) + geom_point(size=2) + scale_fill_manual("Cluster", values = pal) + 
   scale_colour_manual("Cluster", values = pal) + stat_ellipse(level = 0.8) + theme_classic() + 
   xlab(paste("PCA 1 [", round(eval.1, 2), "%]", sep = "")) + ylab(paste("PCA 2 [", round(eval.2, 2), "%]", sep = "")) + 
   theme(legend.position = "right", text = element_text(size=16), axis.ticks.length = unit(0.2, "cm"), 
@@ -209,7 +209,7 @@ p2
 ####### Figure 5F #######
 #Primary:Secondary BAs PCA
 
-p.bray <- ggplot(bray.df, aes(x=Axis1, y=Axis2, colour=log10(Primary_BA.Secondary_BA), group=Cluster)) + 
+p.bray <- ggplot(pca.scrs, aes(x=Axis1, y=Axis2, colour=log10(Primary_BA.Secondary_BA), group=Cluster)) + 
   geom_point(size=2, alpha=1) + stat_ellipse(level = 0.8, color="grey25", lty=2) + theme_classic() + 
   xlab(paste("PCA 1 [", round(eval.1, 2), "%]", sep = "")) + 
   ylab(paste("PCA 2 [", round(eval.2, 2), "%]", sep = "")) + 
